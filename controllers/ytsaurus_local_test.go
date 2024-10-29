@@ -14,6 +14,7 @@ import (
 
 	ytv1 "github.com/ytsaurus/ytsaurus-k8s-operator/api/v1"
 	"github.com/ytsaurus/ytsaurus-k8s-operator/controllers"
+	"github.com/ytsaurus/ytsaurus-k8s-operator/pkg/consts"
 	"github.com/ytsaurus/ytsaurus-k8s-operator/pkg/testutil"
 )
 
@@ -117,6 +118,7 @@ func TestYtsaurusUpdateStatelessComponent(t *testing.T) {
 	ytsaurusResource.Spec.Discovery.Image = &imageUpdated
 	t.Log("[ Updating discovery with disabled full update ]")
 	ytsaurusResource.Spec.EnableFullUpdate = false
+	ytsaurusResource.Spec.UpdateSelectors = []ytv1.ComponentUpdateSelector{{Component: consts.DiscoveryType}}
 	testutil.UpdateObject(h, &ytv1.Ytsaurus{}, &ytsaurusResource)
 
 	waitClusterState(h, ytv1.ClusterStateRunning)

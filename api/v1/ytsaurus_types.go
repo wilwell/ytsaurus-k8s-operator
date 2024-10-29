@@ -20,6 +20,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/ytsaurus/ytsaurus-k8s-operator/pkg/consts"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
@@ -614,10 +616,11 @@ type YtsaurusSpec struct {
 	//+optional
 	EnableFullUpdate bool `json:"enableFullUpdate"`
 	//+optional
-	//+kubebuilder:validation:Enum={"","Nothing","MasterOnly","DataNodesOnly","TabletNodesOnly","ExecNodesOnly","StatelessOnly","Everything"}
-	// UpdateSelector is an experimental field. Behaviour may change.
-	// If UpdateSelector is not empty EnableFullUpdate is ignored.
+	// Deprecated: UpdateSelector is an experimental field. Behaviour may change.
 	UpdateSelector UpdateSelector `json:"updateSelector"`
+
+	//+optional
+	UpdateSelectors []ComponentUpdateSelector `json:"updateSelectors,omitempty"`
 
 	NodeSelector map[string]string   `json:"nodeSelector,omitempty"`
 	Tolerations  []corev1.Toleration `json:"tolerations,omitempty"`
@@ -649,6 +652,17 @@ type YtsaurusSpec struct {
 	UI *UISpec `json:"ui,omitempty"`
 }
 
+type ComponentUpdateSelector struct {
+	//+optional
+	Component consts.ComponentType `json:"componentKind,omitempty"`
+	//+optional
+	ComponentGroup consts.ComponentGroup `json:"componentGroup,omitempty"`
+	//+kubebuilder:default:=false
+	//+optional
+	Update bool `json:"update"`
+
+	//TODO(#325): Add name field for specific sts and rolling options
+}
 type ClusterState string
 
 const (
@@ -694,36 +708,7 @@ type TabletCellBundleInfo struct {
 
 type UpdateSelector string
 
-const (
-	// UpdateSelectorUnspecified means that selector is disabled and would be ignored completely.
-	UpdateSelectorUnspecified UpdateSelector = ""
-	// UpdateSelectorNothing means that no component could be updated.
-	UpdateSelectorNothing UpdateSelector = "Nothing"
-	// UpdateSelectorMasterOnly means that only master could be updated.
-	UpdateSelectorMasterOnly UpdateSelector = "MasterOnly"
-	// UpdateSelectorTabletNodesOnly means that only data nodes could be updated
-	UpdateSelectorDataNodesOnly UpdateSelector = "DataNodesOnly"
-	// UpdateSelectorTabletNodesOnly means that only tablet nodes could be updated
-	UpdateSelectorTabletNodesOnly UpdateSelector = "TabletNodesOnly"
-	// UpdateSelectorExecNodesOnly means that only tablet nodes could be updated
-	UpdateSelectorExecNodesOnly UpdateSelector = "ExecNodesOnly"
-	// UpdateSelectorStatelessOnly means that only stateless components (everything but master, data nodes, and tablet nodes)
-	// could be updated.
-	UpdateSelectorStatelessOnly UpdateSelector = "StatelessOnly"
-	// UpdateSelectorEverything means that all components could be updated.
-	// With this setting and if master or tablet nodes need update all the components would be updated.
-	UpdateSelectorEverything UpdateSelector = "Everything"
-)
-
 type UpdateFlow string
-
-const (
-	UpdateFlowNone        UpdateFlow = ""
-	UpdateFlowStateless   UpdateFlow = "Stateless"
-	UpdateFlowMaster      UpdateFlow = "Master"
-	UpdateFlowTabletNodes UpdateFlow = "TabletNodes"
-	UpdateFlowFull        UpdateFlow = "Full"
-)
 
 type UpdateStatus struct {
 	//+kubebuilder:default:=None

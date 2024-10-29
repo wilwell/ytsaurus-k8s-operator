@@ -316,7 +316,7 @@ var _ = Describe("Basic test for Ytsaurus controller", func() {
 
 				By("Run cluster update with selector: nothing")
 				Expect(k8sClient.Get(ctx, name, ytsaurus)).Should(Succeed())
-				ytsaurus.Spec.UpdateSelector = ytv1.UpdateSelectorNothing
+				//ytsaurus.Spec.UpdateSelectors =
 				// We want change in all yson configs, new discovery instance will trigger that.
 				ytsaurus.Spec.Discovery.InstanceCount += 1
 				Expect(k8sClient.Update(ctx, ytsaurus)).Should(Succeed())
@@ -331,7 +331,7 @@ var _ = Describe("Basic test for Ytsaurus controller", func() {
 
 				By("Update cluster update with strategy full")
 				Expect(k8sClient.Get(ctx, name, ytsaurus)).Should(Succeed())
-				ytsaurus.Spec.UpdateSelector = ytv1.UpdateSelectorEverything
+				ytsaurus.Spec.UpdateSelectors = []ytv1.ComponentUpdateSelector{{ComponentGroup: consts.ComponentGroupEverything, Update: true}}
 				ytsaurus.Spec.Discovery.InstanceCount += 1
 				Expect(k8sClient.Update(ctx, ytsaurus)).Should(Succeed())
 				EventuallyYtsaurus(ctx, name, reactionTimeout).Should(HaveClusterUpdatingComponents())
@@ -360,7 +360,7 @@ var _ = Describe("Basic test for Ytsaurus controller", func() {
 
 				By("Run cluster update with selector:ExecNodesOnly")
 				Expect(k8sClient.Get(ctx, name, ytsaurus)).Should(Succeed())
-				ytsaurus.Spec.UpdateSelector = ytv1.UpdateSelectorExecNodesOnly
+				ytsaurus.Spec.UpdateSelectors = []ytv1.ComponentUpdateSelector{{Component: consts.ExecNodeType, Update: true}}
 				ytsaurus.Spec.Discovery.InstanceCount += 1
 				Expect(k8sClient.Update(ctx, ytsaurus)).Should(Succeed())
 				EventuallyYtsaurus(ctx, name, reactionTimeout).Should(HaveClusterUpdatingComponents("ExecNode"))
@@ -379,7 +379,7 @@ var _ = Describe("Basic test for Ytsaurus controller", func() {
 
 				By("Run cluster update with selector:TabletNodesOnly")
 				Expect(k8sClient.Get(ctx, name, ytsaurus)).Should(Succeed())
-				ytsaurus.Spec.UpdateSelector = ytv1.UpdateSelectorTabletNodesOnly
+				ytsaurus.Spec.UpdateSelectors = []ytv1.ComponentUpdateSelector{{Component: consts.TabletNodeType, Update: true}}
 				ytsaurus.Spec.Discovery.InstanceCount += 1
 				Expect(k8sClient.Update(ctx, ytsaurus)).Should(Succeed())
 				EventuallyYtsaurus(ctx, name, reactionTimeout).Should(HaveClusterUpdatingComponents("TabletNode"))
@@ -410,7 +410,7 @@ var _ = Describe("Basic test for Ytsaurus controller", func() {
 
 				By("Run cluster update with selector:MasterOnly")
 				Expect(k8sClient.Get(ctx, name, ytsaurus)).Should(Succeed())
-				ytsaurus.Spec.UpdateSelector = ytv1.UpdateSelectorMasterOnly
+				ytsaurus.Spec.UpdateSelectors = []ytv1.ComponentUpdateSelector{{Component: consts.MasterType, Update: true}}
 				ytsaurus.Spec.Discovery.InstanceCount += 1
 				Expect(k8sClient.Update(ctx, ytsaurus)).Should(Succeed())
 				EventuallyYtsaurus(ctx, name, reactionTimeout).Should(HaveClusterUpdatingComponents("Master"))
@@ -428,7 +428,7 @@ var _ = Describe("Basic test for Ytsaurus controller", func() {
 
 				By("Run cluster update with selector:StatelessOnly")
 				Expect(k8sClient.Get(ctx, name, ytsaurus)).Should(Succeed())
-				ytsaurus.Spec.UpdateSelector = ytv1.UpdateSelectorStatelessOnly
+				ytsaurus.Spec.UpdateSelectors = []ytv1.ComponentUpdateSelector{{ComponentGroup: consts.ComponentGroupStateless, Update: true}}
 				ytsaurus.Spec.Discovery.InstanceCount += 1
 				Expect(k8sClient.Update(ctx, ytsaurus)).Should(Succeed())
 				EventuallyYtsaurus(ctx, name, reactionTimeout).Should(

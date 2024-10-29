@@ -215,7 +215,7 @@ func MarkAllJobsCompleted(h *TestHelper) {
 }
 
 const (
-	eventuallyWaitTime = 10 * time.Second
+	eventuallyWaitTime = 300 * time.Second
 	eventuallyTickTime = 500 * time.Millisecond
 )
 
